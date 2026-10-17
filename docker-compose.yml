@@ -1,0 +1,28 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PROJECT_NAME=IDShield AI
+      - SECRET_KEY=production-secret-key-change-me
+      - DATABASE_URL=sqlite+aiosqlite:///./idshield.db
+      - DEMO_MODE=True
+    volumes:
+      - idshield_storage:/app/storage
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  idshield_storage:

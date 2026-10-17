@@ -1,0 +1,69 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Python Environments
+.venv/
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing & Caching
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+backend/idshield.db
+idshield.db
+
+# Storage artifacts (preserve directory structure and sample specimens)
+backend/storage/reports/*
+!backend/storage/reports/.gitkeep
+backend/storage/documents/*
+!backend/storage/documents/passport_alexander_morgan.jpg
+!backend/storage/documents/passport_altered_tampered.jpg
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.cache/
+.eslintcache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment & Sensitive configs
+.env
+.env.local
+.env.*.local
+
+# Operating System & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
