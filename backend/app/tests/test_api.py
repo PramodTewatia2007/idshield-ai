@@ -13,12 +13,27 @@ async def test_full_api_workflow():
     await init_db_and_seed()
     
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-        # Test Root Endpoint
+        # Test Root Endpoint (JSON default for API clients)
         root_resp = await client.get("/")
         assert root_resp.status_code == 200
         assert root_resp.json()["status"] == "online"
 
-        # Test Health Check
+        # Test Root with browser Accept header (HTML SPA)
+        html_root = await client.get("/", headers={"Accept": "text/html,application/xhtml+xml"})
+        assert html_root.status_code == 200
+        assert "<!doctype html" in html_root.text.lower() or "<html" in html_root.text.lower()
+
+        # Test SPA client-side route fallback
+        spa_resp = await client.get("/cases")
+        assert spa_resp.status_code == 200
+        assert "<!doctype html" in spa_resp.text.lower() or "<html" in spa_resp.text.lower()
+
+        # Test Top-level Health Check (used by Render)
+        health_resp = await client.get("/health")
+        assert health_resp.status_code == 200
+        assert health_resp.json()["status"] == "online"
+
+        # Test API Health Check
         h_resp = await client.get("/api/health")
         assert h_resp.status_code == 200
         assert h_resp.json()["status"] == "healthy"

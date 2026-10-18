@@ -5,7 +5,7 @@ pydantic-settings==2.16.0
 sqlalchemy==2.1.5
 aiosqlite==0.22.1
 greenlet==3.5.6
-opencv-python==4.14.0.94
+opencv-python-headless>=4.8.0
 pillow==13.0.0
 numpy==2.5.4
 pypdf==6.21.1

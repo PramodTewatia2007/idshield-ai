@@ -110,3 +110,50 @@ cd backend
 2. **Biometric Privacy Minimization**: Facial comparison operates only for authorized 1:1 verification. Facial templates are ephemeral and non-reconstructible.
 3. **Evidence Integrity**: Every uploaded credential is cryptographically hashed with SHA-256 upon ingestion and recorded in an immutable audit ledger.
 4. **Mock vs Production Transparency**: External database queries and unconfigured third-party tools are explicitly flagged with status badges (`Operational`, `Mock Gateway`, or `Awaiting Configuration`).
+
+---
+
+## 7. Deploy on Render
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/PramodTewatia2007/idshield-ai)
+
+IDShield AI comes with a turnkey Render Blueprint (`render.yaml`) that builds the React frontend and runs the FastAPI backend in a unified, production-ready web service on Render's Free tier.
+
+### Option A: One-Click Blueprint Deployment (Recommended)
+
+1. Click the **Deploy to Render** button above (or visit [https://dashboard.render.com/blueprints/new](https://dashboard.render.com/blueprints/new)).
+2. Connect your GitHub repository: `PramodTewatia2007/idshield-ai`.
+3. Render will automatically detect `render.yaml` and configure:
+   - **Service Name**: `idshield-ai`
+   - **Environment**: Python 3.11
+   - **Build Command**: `bash ./build.sh` (installs node dependencies, builds frontend, installs python packages)
+   - **Start Command**: `uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT`
+   - **Health Check Path**: `/health`
+4. Click **Apply**. Within ~2-3 minutes, your live application URL (e.g. `https://idshield-ai.onrender.com`) will be active with both the UI and API fully functional!
+
+### Option B: Manual Web Service Setup in Render Dashboard
+
+If you prefer to configure manually without the Blueprint:
+
+1. In the [Render Dashboard](https://dashboard.render.com/), click **New +** -> **Web Service**.
+2. Connect your repository: `PramodTewatia2007/idshield-ai`.
+3. Fill in the service configuration:
+   - **Name**: `idshield-ai`
+   - **Language / Runtime**: `Python 3`
+   - **Branch**: `main`
+   - **Region**: Any (e.g., *Oregon (US West)* or *Frankfurt (EU)*)
+   - **Build Command**: `bash ./build.sh`
+   - **Start Command**: `uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT`
+   - **Instance Type**: `Free`
+4. In **Advanced Settings**, add the following **Environment Variables**:
+   | Key | Value | Description |
+   | :--- | :--- | :--- |
+   | `PYTHON_VERSION` | `3.11.9` | Sets the Python runtime version |
+   | `NODE_VERSION` | `20` | Node.js version for frontend build |
+   | `SECRET_KEY` | *(Click "Generate")* | Cryptographic signing key for JWTs |
+   | `DATABASE_URL` | `sqlite+aiosqlite:///./idshield.db` | Default database connection |
+   | `DEMO_MODE` | `true` | Pre-seeds demo border cases & documents |
+   | `CORS_ORIGINS` | `*` | Allowed CORS origins |
+5. Set **Health Check Path** to `/health`.
+6. Click **Create Web Service**. Render will execute `build.sh` and launch the app.
+
