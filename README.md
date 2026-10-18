@@ -125,7 +125,7 @@ IDShield AI comes with a turnkey Render Blueprint (`render.yaml`) that builds th
 2. Connect your GitHub repository: `PramodTewatia2007/idshield-ai`.
 3. Render will automatically detect `render.yaml` and configure:
    - **Service Name**: `idshield-ai`
-   - **Environment**: Python 3.11
+   - **Environment**: Python 3.12
    - **Build Command**: `bash ./build.sh` (installs node dependencies, builds frontend, installs python packages)
    - **Start Command**: `uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT`
    - **Health Check Path**: `/health`
@@ -148,7 +148,7 @@ If you prefer to configure manually without the Blueprint:
 4. In **Advanced Settings**, add the following **Environment Variables**:
    | Key | Value | Description |
    | :--- | :--- | :--- |
-   | `PYTHON_VERSION` | `3.11.9` | Sets the Python runtime version |
+   | `PYTHON_VERSION` | `3.12.9` | Sets the Python runtime version |
    | `NODE_VERSION` | `20` | Node.js version for frontend build |
    | `SECRET_KEY` | *(Click "Generate")* | Cryptographic signing key for JWTs |
    | `DATABASE_URL` | `sqlite+aiosqlite:///./idshield.db` | Default database connection |

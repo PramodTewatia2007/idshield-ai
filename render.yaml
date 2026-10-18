@@ -10,7 +10,7 @@ services:
     autoDeploy: true
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.9
+        value: 3.12.9
       - key: NODE_VERSION
         value: 20
       - key: SECRET_KEY
