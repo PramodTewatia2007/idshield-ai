@@ -13,20 +13,31 @@ class FaceVerificationEngine:
     """
     def __init__(self):
         self.model_version = "IDShield-BioMatch-v1.4-LBP"
-        # Load OpenCV Haar Cascade for face detection
-        cascade_path = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
-        self.face_cascade = cv2.CascadeClassifier(cascade_path)
+        self.face_cascade = None
+        # Safely load OpenCV Haar Cascade for face detection
+        try:
+            if hasattr(cv2, 'data') and hasattr(cv2.data, 'haarcascades') and hasattr(cv2, 'CascadeClassifier'):
+                cascade_path = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
+                self.face_cascade = cv2.CascadeClassifier(cascade_path)
+            elif hasattr(cv2, 'CascadeClassifier'):
+                self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+        except Exception:
+            self.face_cascade = None
 
     def detect_face(self, image_np: np.ndarray) -> Optional[List[int]]:
         """Return [x, y, w, h] of the largest detected face."""
-        gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
-        faces = self.face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4, minSize=(60, 60))
-        if len(faces) == 0:
-            return None
-        # Select largest face
-        faces = sorted(faces, key=lambda f: f[2] * f[3], reverse=True)
-        x, y, w, h = faces[0]
-        return [int(x), int(y), int(w), int(h)]
+        if self.face_cascade is not None and hasattr(self.face_cascade, 'detectMultiScale') and not self.face_cascade.empty():
+            try:
+                gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
+                faces = self.face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4, minSize=(60, 60))
+                if len(faces) > 0:
+                    # Select largest face
+                    faces = sorted(faces, key=lambda f: f[2] * f[3], reverse=True)
+                    x, y, w, h = faces[0]
+                    return [int(x), int(y), int(w), int(h)]
+            except Exception:
+                pass
+        return None
 
     def compare_faces(self, doc_image_path: str, probe_image_base64: Optional[str] = None) -> Dict[str, Any]:
         """
