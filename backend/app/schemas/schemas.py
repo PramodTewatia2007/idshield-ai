@@ -156,6 +156,7 @@ class DocumentResponse(BaseModel):
     document_type: DocumentType
     file_name: str
     file_path: str
+    file_url: Optional[str] = None
     file_hash: str
     file_size: int
     mime_type: str

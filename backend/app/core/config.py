@@ -15,9 +15,18 @@ class Settings(BaseSettings):
     
     # Storage paths
     STORAGE_DIR: str = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "storage"))
-    DOCUMENTS_DIR: str = os.path.join(STORAGE_DIR, "documents")
-    REPORTS_DIR: str = os.path.join(STORAGE_DIR, "reports")
-    SAMPLES_DIR: str = os.path.join(STORAGE_DIR, "samples")
+
+    @property
+    def DOCUMENTS_DIR(self) -> str:
+        return os.path.join(self.STORAGE_DIR, "documents")
+
+    @property
+    def REPORTS_DIR(self) -> str:
+        return os.path.join(self.STORAGE_DIR, "reports")
+
+    @property
+    def SAMPLES_DIR(self) -> str:
+        return os.path.join(self.STORAGE_DIR, "samples")
     
     # CORS
     BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"]

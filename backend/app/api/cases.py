@@ -1,13 +1,13 @@
 import os
 import random
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
 from typing import List, Optional
 from app.core.database import get_db
-from app.core.auth import get_current_user
+from app.core.auth import get_current_user, get_optional_current_user, get_user_from_token
 from app.models.models import (
     User, Case, Document, CaseStatus, RiskAssessment, AuditEvent,
     OSINTFinding, DatabaseCheck, FaceVerificationResult
@@ -297,9 +297,24 @@ async def perform_face_verification(
 @router.get("/{case_id}/report")
 async def download_case_report(
     case_id: int,
-    current_user: User = Depends(get_current_user),
+    token: Optional[str] = Query(None),
+    auth_user: Optional[User] = Depends(get_optional_current_user),
     db: AsyncSession = Depends(get_db)
 ):
+    current_user = auth_user
+    if not current_user and token:
+        try:
+            current_user = await get_user_from_token(token, db)
+        except Exception:
+            current_user = None
+            
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        
     case_obj = await get_case_by_id(case_id=case_id, current_user=current_user, db=db)
     
     # Format case dictionary for report builder

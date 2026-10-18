@@ -12,6 +12,7 @@ from app.models.models import User, UserRole
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login", auto_error=False)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
@@ -28,10 +29,7 @@ def create_access_token(subject: str | Any, role: str, expires_delta: Optional[t
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(
-    db: AsyncSession = Depends(get_db),
-    token: str = Depends(oauth2_scheme)
-) -> User:
+async def get_user_from_token(token: str, db: AsyncSession) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -51,6 +49,23 @@ async def get_current_user(
     if user is None or not user.is_active:
         raise credentials_exception
     return user
+
+async def get_current_user(
+    db: AsyncSession = Depends(get_db),
+    token: str = Depends(oauth2_scheme)
+) -> User:
+    return await get_user_from_token(token, db)
+
+async def get_optional_current_user(
+    db: AsyncSession = Depends(get_db),
+    token: Optional[str] = Depends(oauth2_scheme_optional)
+) -> Optional[User]:
+    if not token:
+        return None
+    try:
+        return await get_user_from_token(token, db)
+    except HTTPException:
+        return None
 
 def require_roles(*roles: UserRole):
     def role_checker(current_user: User = Depends(get_current_user)) -> User:

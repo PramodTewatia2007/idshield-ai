@@ -18,8 +18,13 @@ export const DocumentScreeningPage: React.FC<DocumentScreeningProps> = ({
   cases,
   onDocumentUploaded
 }) => {
-  const [selectedCaseId, setSelectedCaseId] = useState<number>(cases[0]?.id || 1);
+  const [selectedCaseId, setSelectedCaseId] = useState<number | null>(null);
   const [isCreatingNewCase, setIsCreatingNewCase] = useState(false);
+
+  // Derive active case ID during render
+  const effectiveCaseId = selectedCaseId && cases.some(c => c.id === selectedCaseId)
+    ? selectedCaseId
+    : (cases[0]?.id || 1);
   const [newCaseTitle, setNewCaseTitle] = useState('');
   const [docTypeHint, setDocTypeHint] = useState('passport');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -42,7 +47,7 @@ export const DocumentScreeningPage: React.FC<DocumentScreeningProps> = ({
     setUploadSuccess(null);
 
     try {
-      let targetCaseId = selectedCaseId;
+      let targetCaseId = effectiveCaseId;
 
       // Create new case on the fly if needed
       if (isCreatingNewCase) {
@@ -93,7 +98,7 @@ export const DocumentScreeningPage: React.FC<DocumentScreeningProps> = ({
               <div className="flex space-x-2">
                 {!isCreatingNewCase ? (
                   <select
-                    value={selectedCaseId}
+                    value={effectiveCaseId}
                     onChange={(e) => setSelectedCaseId(Number(e.target.value))}
                     className="w-full bg-navy-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500"
                   >

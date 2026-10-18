@@ -173,7 +173,7 @@ class OCRService:
                 {"field_name": "date_of_issue", "field_label": "Date of Issue", "extracted_value": "2020-05-10", "ocr_confidence": 0.94, "bounding_box": [220, 195, 110, 25]},
                 {"field_name": "expiry_date", "field_label": "Date of Expiry", "extracted_value": "2030-05-09", "ocr_confidence": 0.96, "bounding_box": [220, 235, 110, 25]},
                 {"field_name": "mrz_line1", "field_label": "MRZ Line 1", "extracted_value": "P<UTOMORGAN<<ALEXANDER<VICTOR<<<<<<<<<<<<<<<", "ocr_confidence": 0.99, "bounding_box": [30, 310, 480, 22]},
-                {"field_name": "mrz_line2", "field_label": "MRZ Line 2", "extracted_value": "P849201947UTO8804148M3005098<<<<<<<<<<<<<<02", "ocr_confidence": 0.99, "bounding_box": [30, 335, 480, 22]},
+                {"field_name": "mrz_line2", "field_label": "MRZ Line 2", "extracted_value": "P849201940UTO8804145M3005095<<<<<<<<<<<<<<02", "ocr_confidence": 0.99, "bounding_box": [30, 335, 480, 22]},
             ]
         elif "visa" in sample_lower:
             doc_type = "visa"

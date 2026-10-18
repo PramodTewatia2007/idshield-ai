@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timezone
 import enum
 from sqlalchemy import (
@@ -100,6 +101,11 @@ class Document(Base):
     extracted_fields = relationship("ExtractedField", back_populates="document_rel", cascade="all, delete-orphan")
     validation_results = relationship("ValidationResult", back_populates="document_rel", cascade="all, delete-orphan")
     tampering_findings = relationship("TamperingFinding", back_populates="document_rel", cascade="all, delete-orphan")
+
+    @property
+    def file_url(self) -> str:
+        safe_name = os.path.basename(self.file_path).replace("\\", "/")
+        return f"/storage/documents/{safe_name}"
 
 class ExtractedField(Base):
     __tablename__ = "extracted_fields"

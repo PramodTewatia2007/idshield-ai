@@ -1,4 +1,5 @@
 import os
+import re
 import hashlib
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -40,8 +41,10 @@ async def upload_document(
 
     file_hash = hashlib.sha256(content).hexdigest()
     
-    # Save file to protected storage
-    safe_name = f"{file_hash[:12]}_{file.filename}"
+    # Save file to protected storage with sanitized filename
+    raw_name = os.path.basename(file.filename or "uploaded_document.jpg")
+    clean_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', raw_name)
+    safe_name = f"{file_hash[:12]}_{clean_name}"
     file_path = os.path.join(settings.DOCUMENTS_DIR, safe_name)
     with open(file_path, "wb") as f:
         f.write(content)

@@ -156,7 +156,7 @@ export default function App() {
                           <span className="text-slate-500 text-xs ml-2">({c.status})</span>
                         </div>
                         <a
-                          href={`${API_BASE_URL}/cases/${c.id}/report`}
+                          href={`${API_BASE_URL}/cases/${c.id}/report?token=${localStorage.getItem('idshield_token') || ''}`}
                           target="_blank"
                           rel="noreferrer"
                           className="px-3 py-1.5 rounded-lg bg-sky-600/20 hover:bg-sky-600/40 text-sky-300 border border-sky-500/30 text-xs font-medium font-mono"

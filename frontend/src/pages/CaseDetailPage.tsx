@@ -140,7 +140,7 @@ export const CaseDetailPage: React.FC<CaseDetailProps> = ({
         {/* Action Controls */}
         <div className="flex items-center space-x-2">
           <a
-            href={`${API_BASE_URL}/cases/${caseData.id}/report`}
+            href={`${API_BASE_URL}/cases/${caseData.id}/report?token=${localStorage.getItem('idshield_token') || ''}`}
             target="_blank"
             rel="noreferrer"
             className="px-3 py-1.5 rounded-lg bg-navy-900 border border-slate-700 hover:bg-slate-800 text-xs text-slate-200 font-medium flex items-center space-x-1.5 transition"
@@ -195,7 +195,7 @@ export const CaseDetailPage: React.FC<CaseDetailProps> = ({
               <div className="relative rounded-lg overflow-hidden border border-slate-700 bg-black flex items-center justify-center min-h-[400px]">
                 {/* Image render */}
                 <img
-                  src={`${STORAGE_BASE_URL}/storage/documents/${primaryDoc.file_path.split('\\').pop()?.split('/').pop()}`}
+                  src={primaryDoc.file_url ? `${STORAGE_BASE_URL}${primaryDoc.file_url}` : `${STORAGE_BASE_URL}/storage/documents/${primaryDoc.file_path.split('\\').pop()?.split('/').pop()}`}
                   alt="Document Specimen"
                   className="max-h-[460px] w-auto object-contain"
                 />

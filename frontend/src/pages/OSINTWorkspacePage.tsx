@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Globe, RefreshCw } from 'lucide-react';
 import { apiClient } from '../api/client';
-import { OSINTFinding } from '../types';
+import { OSINTFinding, CaseRecord } from '../types';
 
 export const OSINTWorkspacePage: React.FC = () => {
   const [target, setTarget] = useState('Alexander Victor Morgan');
   const [queryType, setQueryType] = useState('identity_name');
   const [loading, setLoading] = useState(false);
   const [findings, setFindings] = useState<OSINTFinding[]>([]);
+  const [cases, setCases] = useState<CaseRecord[]>([]);
+  const [selectedCaseId, setSelectedCaseId] = useState<number | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedConnectors, setSelectedConnectors] = useState({
     spiderfoot: true,
     theharvester: true,
@@ -15,23 +18,54 @@ export const OSINTWorkspacePage: React.FC = () => {
     sanctions_watch: true,
   });
 
+  useEffect(() => {
+    let isMounted = true;
+    apiClient.get('/cases').then((resp) => {
+      if (isMounted) {
+        setCases(resp.data);
+        if (resp.data.length > 0) {
+          setSelectedCaseId(resp.data[0].id);
+        }
+      }
+    }).catch((err) => {
+      console.error('Failed to load cases in OSINT workspace', err);
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMessage(null);
     try {
       const activeConnectors = Object.entries(selectedConnectors)
         .filter(([, active]) => active)
         .map(([name]) => name);
 
-      // Search via case 1 for workspace exploration
-      const resp = await apiClient.post('/cases/1/osint-search', {
+      let targetCaseId = selectedCaseId;
+
+      if (!targetCaseId) {
+        // Create an ad-hoc case if none exists
+        const newCase = await apiClient.post('/cases', {
+          title: `OSINT Investigation - ${target}`,
+          description: 'Ad-hoc case opened from OSINT Intelligence workspace.'
+        });
+        targetCaseId = newCase.data.id;
+        setSelectedCaseId(targetCaseId);
+        setCases((prev) => [newCase.data, ...prev]);
+      }
+
+      const resp = await apiClient.post(`/cases/${targetCaseId}/osint-search`, {
         query_target: target,
         query_type: queryType,
         connectors: activeConnectors
       });
       setFindings(resp.data);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setErrorMessage(err.response?.data?.detail || 'OSINT search failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -49,7 +83,28 @@ export const OSINTWorkspacePage: React.FC = () => {
 
       {/* Query Bar & Source Config */}
       <div className="bg-navy-800 border border-slate-800 rounded-xl p-5 shadow-xl space-y-4">
+        {errorMessage && (
+          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-xs text-red-400">
+            {errorMessage}
+          </div>
+        )}
+
         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
+          {cases.length > 0 && (
+            <select
+              value={selectedCaseId || ''}
+              onChange={(e) => setSelectedCaseId(Number(e.target.value))}
+              className="bg-navy-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 max-w-xs"
+              title="Target Investigation Case"
+            >
+              {cases.map((c) => (
+                <option key={c.id} value={c.id}>
+                  [{c.case_reference}] {c.title.substring(0, 30)}...
+                </option>
+              ))}
+            </select>
+          )}
+
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
             <input

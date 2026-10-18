@@ -56,7 +56,7 @@ def create_synthetic_passport_image(output_path: str, name: str, doc_no: str, is
     cv2.line(img, (0, 390), (720, 390), (180, 180, 180), 1)
     clean_name = name.replace(" ", "<")
     mrz1 = f"P<UTO{clean_name}<<<<<<<<<<<<<<<<<<<<<<<<<<<"[:44]
-    mrz2 = f"{doc_no}7UTO8804148M3005098<<<<<<<<<<<<<<02"[:44]
+    mrz2 = f"{doc_no}0UTO8804145M3005095<<<<<<<<<<<<<<02"[:44]
     cv2.putText(img, mrz1, (30, 425), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.75, (10, 10, 10), 1)
     cv2.putText(img, mrz2, (30, 455), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.75, (10, 10, 10), 1)
 

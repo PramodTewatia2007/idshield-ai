@@ -169,7 +169,7 @@ export const CaseManagementPage: React.FC<CaseManagementProps> = ({
                         <span>Inspect</span>
                       </button>
                       <a
-                        href={`${API_BASE_URL}/cases/${c.id}/report`}
+                        href={`${API_BASE_URL}/cases/${c.id}/report?token=${localStorage.getItem('idshield_token') || ''}`}
                         target="_blank"
                         rel="noreferrer"
                         className="p-1 rounded hover:bg-slate-700 text-slate-400 hover:text-white transition inline-block align-middle"

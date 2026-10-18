@@ -124,6 +124,7 @@ export interface DocumentRecord {
   document_type: DocumentType;
   file_name: string;
   file_path: string;
+  file_url?: string;
   file_hash: string;
   file_size: number;
   mime_type: string;
